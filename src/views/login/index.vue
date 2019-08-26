@@ -2,11 +2,11 @@
   <div class="login">
     <el-card class="my-card">
       <img src="../../assets/images/logo_index.png" alt />
-      <el-form ref="form" :model="loginForm">
-        <el-form-item>
-          <el-input v-model="loginForm.mobile" placeholder="请输入手机号"></el-input>
-        </el-form-item>
-        <el-form-item>
+      <el-form ref="loginForm" :model="loginForm"  :rules="rules" status-icon>
+        <el-form-item prop="mobile">
+          <el-input v-model="loginForm.mobile" placeholder="请输入手机号" ></el-input>
+        </el-form-item >
+        <el-form-item prop="code">
           <el-input
             v-model="loginForm.code"
             placeholder="请输入验证码"
@@ -19,7 +19,7 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="primary" style="width:100%">登录</el-button>
+          <el-button @click="login()" type="primary" style="width:100%">登录</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -27,14 +27,53 @@
 </template>
 
 <script>
+import store from '@/store'
 export default {
   data () {
+    const checkMobile = (rule, value, callback) => {
+      if (!/^1[3-9]\d{9}$/.test(value)) {
+        return callback(new Error('请输入正确手机格式'))
+      }
+      callback()
+    }
     return {
       loginForm: {
-        mobile: '',
-        code: ''
+        mobile: '13488888888',
+        code: '246810'
+      },
+      rules: {
+        mobile: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          { validator: checkMobile, trigger: 'blur' }
+        ],
+        code: [
+          { required: true, message: '请输入验证码', trigger: 'blur' },
+          { len: 6, message: '请输入6位验证码', trigger: 'blur' }
+        ]
       }
     }
+  },
+  methods: {
+    login () {
+      //  调用validate对整体表单进行验证
+      this.$refs.loginForm.validate((valid) => {
+        if (valid) {
+          this.$http.post('authorizations', this.loginForm)
+            .then((res) => {
+              //  成功进行跳转
+              // res  是响应对象  res.data 响应主体    res.data.data(响应主体包含 data message)
+              // 用户信息  res.data.data
+              // 操作用户信息 就是操作store存储
+              store.setUser(res.data.data)
+              this.$router.push('/')
+            })
+            .catch(() => {
+              this.$message.error('手机号或验证码错误')
+            })
+        }
+      })
+    }
+
   }
 }
 </script>
