@@ -56,20 +56,35 @@ export default {
   methods: {
     login () {
       //  调用validate对整体表单进行验证
-      this.$refs.loginForm.validate((valid) => {
+      this.$refs.loginForm.validate(async valid => {
         if (valid) {
-          this.$http.post('authorizations', this.loginForm)
-            .then((res) => {
-              //  成功进行跳转
-              // res  是响应对象  res.data 响应主体    res.data.data(响应主体包含 data message)
-              // 用户信息  res.data.data
-              // 操作用户信息 就是操作store存储
-              store.setUser(res.data.data)
-              this.$router.push('/')
-            })
-            .catch(() => {
-              this.$message.error('手机号或验证码错误')
-            })
+          // this.$http.post('authorizations', this.loginForm)
+          // .then((res) => {
+          //   //  成功进行跳转
+          //   // res  是响应对象  res.data 响应主体    res.data.data(响应主体包含 data message)
+          //   // 用户信息  res.data.data
+          //   // 操作用户信息 就是操作store存储
+          //   store.setUser(res.data.data)
+          //   this.$router.push('/')
+          // })
+          // .catch(() => {
+          //   this.$message.error('手机号或验证码错误')
+          // })
+          // const { data: { data } } = this.$http.post('authorizations', this.loginForm)
+          // store.setUser(data)
+          // this.$router.push('/')
+          try {
+            // 使用async await 调用接口获取所有的数据
+            // 使用await修饰的函数  返回值为promise 等于返回后的结果
+            // await 同步执行这个函数 阻碍当前函数执行
+            // await的使用必须在async 修饰的函数中（await的外层函数必须加上async）
+            // 任何报错代码 使用try{}catch(E){} 进行处理
+            const { data: { data } } = await this.$http.post('authorizations', this.loginForm)
+            store.setUser(data)
+            this.$router.push('/')
+          } catch {
+            this.$message.error('手机号或验证码错误')
+          }
         }
       })
     }

@@ -2,10 +2,26 @@
 import axios from 'axios'
 import store from '@/store'
 import router from '@/router'
+import JSONBIG from 'json-bigint'
 
 // 进行配置
 // 基准地址
 axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0/'
+// 自定义转换响应内容
+axios.defaults.transformResponse = [(data) => {
+  // 对 data 进行任意转换处理
+  try {
+    return JSONBIG.parse(data)
+  } catch (e) {
+    console.log(e)
+
+    return data
+  }
+}]
+// axios.defaults.transformResponse = [(data) => {
+//   // data 原始数据
+//   return JSONBIG.parse(data)
+// }]
 // 请求头  token
 // axios.defaults.headers.Authorization = `Bearer ${store.getUser().token}`
 // 添加请求拦截器
@@ -17,6 +33,8 @@ axios.interceptors.request.use(config => {
   // 修改配置  添加token信息
   // 返回修改好的配置  请求的时候使用你的修改后的配置
   //   修改配置  加token
+  console.log(123)
+
   config.headers.Authorization = `Bearer ${store.getUser().token}`
   return config
 }, (err) => {
@@ -25,6 +43,7 @@ axios.interceptors.request.use(config => {
 
 axios.interceptors.response.use(res => res, err => {
 //    获取状态码
+  console.log(123)
   const status = err.response.status
   //    判断是否401
   if (status === 401) {

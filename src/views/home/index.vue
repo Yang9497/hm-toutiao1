@@ -49,21 +49,23 @@
       <el-header>
         <i class="icon el-icon-s-fold" @click="toggleAside()"></i>
         <span class="text"> 江苏传智播客科技教育有限公司</span>
-        <el-dropdown class="my-dropdown">
+        <el-dropdown class="my-dropdown" @command="clickItem">
           <span class="el-dropdown-link">
-            <img src="../../assets/images/avatar.jpg" class="avatar" alt />
+            <img :src="photo" class="avatar" alt />
             <span class="el-dropdown-link name" >
-              下拉菜单
+              {{name}}
               <i class="el-icon-arrow-down el-icon--right"></i>
             </span>
           </span>
 
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>
-              <i class="el-icon-s-tools"></i>个人设置
+            <el-dropdown-item command="setting">
+
+              <!-- @click.stop 阻止事件冒泡   @click.native="setting()" @click.native="logout()" @click.native  给组件绑定原生的事件 -->
+              <i class="el-icon-s-tools" ></i>个人设置
             </el-dropdown-item>
-            <el-dropdown-item>
-              <i class="el-icon-unlock"></i>退出登录
+            <el-dropdown-item command="logout">
+              <i class="el-icon-unlock" ></i>退出登录
             </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
@@ -76,18 +78,48 @@
 </template>
 
 <script>
+// 引入 store
+import store from '@/store'
+
 export default {
 
   data () {
     return {
-      isCollapse: false
+      isCollapse: false,
+      name: '',
+      photo: ''
     }
+  },
+  created () {
+    console.log(store)
+
+    const user = store.getUser()
+    console.log(user)
+
+    this.name = user.name
+    this.photo = user.photo
   },
   methods: {
     toggleAside () {
       this.isCollapse = !this.isCollapse
-    }
+    },
+    logout () {
+      // 删除本地信息
+      console.log(12345)
 
+      store.delUser()
+      // 跳转到登录页面
+      this.$router.push('/login')
+    },
+    setting () {
+      this.$router.push('/setting')
+    },
+    clickItem (command) {
+      // 判断是setting还是logout
+      // 组件提供了监听点击事件 dropdown 组件 command事件 回调函数  选项的指令
+      // dropdown-item 组件  command属性的值  指令
+      this[command]()
+    }
   }
 }
 </script>
