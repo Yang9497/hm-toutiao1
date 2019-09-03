@@ -12,6 +12,8 @@ import Image from '@/views/image'
 import Fans from '@/views/fans'
 import Publish from '@/views/publish'
 import Test from '@/test'
+import TEst from '@/components/my-channels'
+
 Vue.use(VueRouter)
 const router = new VueRouter({
   routes: [
@@ -19,6 +21,7 @@ const router = new VueRouter({
     // 跳转更方便一些，$router.push('/login')  $router.push({name:login})
     { path: '/login', name: 'login', component: Login },
     { path: '/test', name: 'test', component: Test },
+    { path: '/test1', name: 'Test1', component: TEst },
     { path: '/',
 
       component: Home,

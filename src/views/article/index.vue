@@ -18,14 +18,8 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="频道：">
-          <el-select clearable v-model="reqParams.channel_id" placeholder="请选择">
-            <el-option
-              v-for="item in channelOptions"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            ></el-option>
-          </el-select>
+          <!-- 使用组件   v-model ====  :value  @input  -->
+          <my-channels v-model="reqParams.channel_id"></my-channels>
         </el-form-item>
         <el-form-item label="日期：">
           <el-date-picker
@@ -68,7 +62,9 @@
               :src="scope.row.cover.images[0]"
               style="width:160px;height:100px;border:1px solid #ddd"
               fit="contain"
+              :preview-src-list="scope.row.cover.images"
             >
+              >
               <div slot="error" class="image-slot">
                 <img src="../../assets/images/error.gif" width="160" height="100" alt />
               </div>
@@ -88,7 +84,13 @@
         <el-table-column prop="pubdate" label="发布时间"></el-table-column>
         <el-table-column width="120" label="操作">
           <template slot-scope="scope">
-            <el-button @click="$router.push(`/publish?id=${scope.row.id}`)" type="primary" icon="el-icon-edit" plain circle></el-button>
+            <el-button
+              @click="$router.push(`/publish?id=${scope.row.id}`)"
+              type="primary"
+              icon="el-icon-edit"
+              plain
+              circle
+            ></el-button>
             <el-button
               type="danger"
               @click="delArticle(scope.row.id)"
@@ -100,7 +102,8 @@
         </el-table-column>
       </el-table>
       <el-pagination
-        style="text-align:center"
+       v-if="total > reqParams.per_page"
+          style="text-align:center;margin-top:20px"
         background
         layout="prev, pager,
        next"
@@ -116,7 +119,6 @@
 <script>
 export default {
   created () {
-    this.getChannelOptions()
     this.getArticle()
   },
   data () {
@@ -129,6 +131,7 @@ export default {
         per_page: 20,
         page: 1
       },
+
       // 频道的下拉选项数据
       channelOptions: [],
       // 日期数据  格式数组 [起始日期，结束日期]
@@ -138,18 +141,13 @@ export default {
     }
   },
   methods: {
-    async getChannelOptions () {
-      const {
-        data: { data }
-      } = await this.$http.get('channels')
-      this.channelOptions = data.channels
-    },
     async getArticle () {
       const {
         data: { data }
       } = await this.$http.get('articles', { params: this.reqParams })
       this.articles = data.results
       this.total = data.total_count
+
       console.log(this.articles)
     },
     changePager (newpager) {
@@ -181,16 +179,17 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
-      }).then(async () => {
-        await this.$http.delete(`articles/${id}`)
-
-        this.$message.success('删除成功')
-        this.getArticle()
-      }).catch((err) => {
-        this.$message.error('删除失败' + err)
       })
-    }
+        .then(async () => {
+          await this.$http.delete(`articles/${id}`)
 
+          this.$message.success('删除成功')
+          this.getArticle()
+        })
+        .catch(err => {
+          this.$message.error('删除失败' + err)
+        })
+    }
   }
 }
 </script>

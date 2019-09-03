@@ -14,6 +14,7 @@
 
 export default {
   name: 'my-bread'
+
 }
 </script>
 

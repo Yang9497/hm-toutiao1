@@ -4,6 +4,7 @@ import ElementUi from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import router from '@/router'
 // import axios from 'axios'
+import '@/styles/index.css'
 import axios from '@/api'
 
 import myPlugin from '@/components'

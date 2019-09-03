@@ -3,7 +3,7 @@
     <el-aside :width="isCollapse?'64px' :'200px'">
       <div class="logo" :class="{miniLogo:isCollapse}"></div>
        <el-menu
-      default-active="/"
+      :default-active="$route.path"
       class="el-menu-vertical-demo"
 
       background-color="#002533"
@@ -80,7 +80,7 @@
 <script>
 // 引入 store
 import store from '@/store'
-
+import eventBus from '@/eventBus'
 export default {
 
   data () {
@@ -98,6 +98,15 @@ export default {
 
     this.name = user.name
     this.photo = user.photo
+    // eventBus.$on('updatename', (name) => {
+    //   this.name = name
+    // })
+    eventBus.$on('updateName', (name) => {
+      this.name = name
+    })
+    eventBus.$on('updataphoto', (photo) => {
+      this.photo = photo
+    })
   },
   methods: {
     toggleAside () {
@@ -159,10 +168,12 @@ export default {
     }
     .my-dropdown{
         float: right;
+
          .avatar{
            width: 30px;
            height: 30px;
            vertical-align: middle;
+           display: inline-block
          }
         .name{
           font-weight: 700;
